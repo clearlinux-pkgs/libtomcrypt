@@ -1,0 +1,1 @@
+make -f makefile.shared PREFIX=/usr DESTDIR=%{buildroot} LIBPATH=/usr/lib64 install

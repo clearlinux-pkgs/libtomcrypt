@@ -4,19 +4,37 @@
 #
 Name     : libtomcrypt
 Version  : 1.18.2
-Release  : 1
+Release  : 2
 URL      : https://github.com/libtom/libtomcrypt/releases/download/v1.18.2/crypt-1.18.2.tar.xz
 Source0  : https://github.com/libtom/libtomcrypt/releases/download/v1.18.2/crypt-1.18.2.tar.xz
 Summary  : public domain open source cryptographic toolkit
 Group    : Development/Tools
 License  : WTFPL
+Requires: libtomcrypt-lib = %{version}-%{release}
 Requires: libtomcrypt-license = %{version}-%{release}
 
 %description
-# libtomcrypt
-Previously the git repository contained `doc/crypt.pdf` for detailed documentation.
-This was changed and the file is now only available from the tarball of the appropriate version
-or from the page https://github.com/libtom/libtomcrypt/releases .
+LibTomCrypt is a fairly comprehensive, modular and portable cryptographic toolkit that provides developers with a vast array of well known published block ciphers, one-way hash functions, chaining modes, pseudo-random number generators, public key cryptography and a plethora of other routines.
+
+%package dev
+Summary: dev components for the libtomcrypt package.
+Group: Development
+Requires: libtomcrypt-lib = %{version}-%{release}
+Provides: libtomcrypt-devel = %{version}-%{release}
+Requires: libtomcrypt = %{version}-%{release}
+
+%description dev
+dev components for the libtomcrypt package.
+
+
+%package lib
+Summary: lib components for the libtomcrypt package.
+Group: Libraries
+Requires: libtomcrypt-license = %{version}-%{release}
+
+%description lib
+lib components for the libtomcrypt package.
+
 
 %package license
 Summary: license components for the libtomcrypt package.
@@ -34,7 +52,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1560525237
+export SOURCE_DATE_EPOCH=1560525580
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -43,18 +61,30 @@ export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
-make  %{?_smp_mflags}
+make  %{?_smp_mflags} -f makefile.shared PREFIX=/usr
 
 
 %install
-export SOURCE_DATE_EPOCH=1560525237
+export SOURCE_DATE_EPOCH=1560525580
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/libtomcrypt
 cp LICENSE %{buildroot}/usr/share/package-licenses/libtomcrypt/LICENSE
-%make_install
+make -f makefile.shared PREFIX=/usr DESTDIR=%{buildroot} LIBPATH=/usr/lib64 install
 
 %files
 %defattr(-,root,root,-)
+
+%files dev
+%defattr(-,root,root,-)
+/usr/include/*.h
+/usr/lib64/libtomcrypt.la
+/usr/lib64/libtomcrypt.so
+/usr/lib64/pkgconfig/libtomcrypt.pc
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libtomcrypt.so.1
+/usr/lib64/libtomcrypt.so.1.0.1
 
 %files license
 %defattr(0644,root,root,0755)
